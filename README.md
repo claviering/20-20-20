@@ -1,3 +1,3 @@
-preventing eyestrain
+# vscode 插件
 
-preventing eye strain
+a helpful trick called the 20-20-20 rule
