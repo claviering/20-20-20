@@ -159,14 +159,21 @@ class CatCodingPanel {
     this._panel.webview.html = this._getHtmlForWebview();
   }
 
-  private _getHtmlForWebview() {
-    // Local path to main script run in the webview
+  private getScriptOnDisk(scriptName: string) {
     const scriptPathOnDisk = vscode.Uri.file(
-      path.join(this._extensionPath, 'media', 'main.js')
+      path.join(this._extensionPath, 'media', scriptName)
     );
-
-    // And the uri we use to load this script in the webview
     const scriptUri = scriptPathOnDisk.with({ scheme: 'vscode-resource' });
+
+    return scriptUri
+  }
+
+  private _getHtmlForWebview() {
+
+    const mainUri = this.getScriptOnDisk('main.js')
+    const buttonUri = this.getScriptOnDisk('button.js')
+    const maincssUri = this.getScriptOnDisk('main.css')
+    const buttoncssUri = this.getScriptOnDisk('button.css')
 
     // Use a nonce to whitelist which scripts can be run
     const nonce = getNonce();
@@ -175,21 +182,82 @@ class CatCodingPanel {
             <html lang="en">
             <head>
                 <meta charset="UTF-8">
-
-                <!--
-                Use a content security policy to only allow loading images from https or from our extension directory,
-                and only allow scripts that have a specific nonce.
-                -->
-                <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src vscode-resource: https:; script-src 'nonce-${nonce}';">
-
+                <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src vscode-resource: https:; script-src 'nonce-${nonce}'; style-src 'unsafe-inline';">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Cat Coding</title>
+                <title>Preventing Eye Strain</title>
             </head>
-            <body>
-                <h1 id="lines-of-code-counter">0</h1>
-
-                <script nonce="${nonce}" src="${scriptUri}"></script>
-            </body>
+            <style>
+            body{
+           padding: 0px 20px;
+         }
+         h1{
+           text-align: center;
+         }
+         .box{
+           display: flex;
+           font-size: 2em;
+           font-weight: bold;
+           padding-top: 24px;
+         }
+         .left-text{
+           width: 45%;
+           text-align: right;
+         }
+         .button {
+           background: #3498db;
+           width: 180px;
+           padding: 4px 0;
+           position: absolute;
+           left: 50%;
+           top: 80%;
+           -webkit-transform: translateX(-50%) translateY(-50%);
+                   transform: translateX(-50%) translateY(-50%);
+           border-radius: 3px;
+         }
+         .button p {
+           text-align: center;
+           text-transform: uppercase;
+           color: #FFF;
+           -webkit-user-select: none;
+              -moz-user-select: none;
+               -ms-user-select: none;
+                   user-select: none;
+         }
+         .button:hover {
+           cursor: pointer;
+         }
+         .button:after {
+           content: "";
+           display: block;
+           position: absolute;
+           width: 100%;
+           height: 10%;
+           border-radius: 50%;
+           background-color: #927608;
+           opacity: 0.4;
+           bottom: -30px;
+         } 
+           </style>
+              <body>
+                <div class="box">
+                <div class="left-text">Every&nbsp;</div>
+                <div class="center-text">20 Minutes</div>
+              </div>
+              <div class="box">
+                <div class="left-text">Look&nbsp;</div>
+                <div class="center-text">20 Feet Away</div>
+              </div>
+              <div class="box">
+                <div class="left-text">For&nbsp;</div>
+                <div class="center-text">20 Seconds</div>
+              </div>
+                <div class="button">
+                  <p>GOOD JOB</p>
+                </div>
+              </body>
+              <script nonce="${nonce}" src="${buttonUri}"></script>
+              <script nonce="${nonce}" src="${mainUri}"></script>
+              <script nonce="${nonce}" src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.12.1/TweenMax.min.js"></script>
             </html>`;
   }
 }
