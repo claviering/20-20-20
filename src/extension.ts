@@ -2,11 +2,10 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 
 export function activate(context: vscode.ExtensionContext) {
-  console.log('starting');
-  setTimeout(() => {
-    console.log('show');
+  // 20 分钟出现一次
+  setInterval(() => {
     CatCodingPanel.createOrShow(context.extensionPath);
-  }, 3000);
+  }, 20*60*1000)
 
   context.subscriptions.push(
     vscode.commands.registerCommand('preventingEyeStrain.start', () => {
@@ -109,6 +108,9 @@ class CatCodingPanel {
           case 'alert':
             vscode.window.showErrorMessage(message.text);
             return;
+          case 'close':
+            this._panel.dispose()
+            return;
         }
       },
       null,
@@ -119,7 +121,7 @@ class CatCodingPanel {
   public doRefactor() {
     // Send a message to the webview webview.
     // You can send any JSON serializable data.
-    this._panel.webview.postMessage({ command: 'refactor' });
+    // this._panel.webview.postMessage({ command: 'refactor' });
   }
 
   public dispose() {
@@ -197,7 +199,7 @@ class CatCodingPanel {
            display: flex;
            font-size: 2em;
            font-weight: bold;
-           padding-top: 24px;
+           padding-top: 12px;
          }
          .left-text{
            width: 45%;
@@ -256,7 +258,6 @@ class CatCodingPanel {
                 </div>
               </body>
               <script nonce="${nonce}" src="${buttonUri}"></script>
-              <script nonce="${nonce}" src="${mainUri}"></script>
               <script nonce="${nonce}" src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.12.1/TweenMax.min.js"></script>
             </html>`;
   }
