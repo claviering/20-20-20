@@ -2,8 +2,6 @@
 
 A helpful trick called the 20-20-20 rule for preventing eye strain. Running `Eye Strain: Stroll to grab a cup of coffee` to have a break
 
-![](https://github.com/claviering/20-20-20/blob/master/media/20-20-eyesights.png)
-
 After or during a long day of working at a computer, have you experienced any of the following problems?
 
 - sore, tired or burning eyes
