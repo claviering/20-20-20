@@ -1,21 +1,21 @@
 {
-  "name": "20-20-20",
-  "version": "0.0.11",
-  "description": "A helpful trick called the 20-20-20 rule",
-  "publisher": "Megan",
+	"name": "20-20-20",
+	"version": "0.0.12",
+	"description": "A helpful trick called the 20-20-20 rule",
+	"publisher": "Megan",
 	"engines": {
 		"vscode": "^1.26.0"
 	},
 	"categories": [
 		"Other"
-  ],
-  "activationEvents": [
+	],
+	"activationEvents": [
 		"onCommand:preventingEyeStrain.start",
 		"onCommand:preventingEyeStrain.stop",
-    "onWebviewPanel:preventingEyeStrain",
-    "*"
-  ],
-  "contributes": {
+		"onWebviewPanel:preventingEyeStrain",
+		"*"
+	],
+	"contributes": {
 		"commands": [
 			{
 				"command": "preventingEyeStrain.start",
@@ -29,20 +29,20 @@
 			}
 		]
 	},
-  "main": "./out/extension.js",
-  "scripts": {
+	"main": "./out/extension.js",
+	"scripts": {
 		"vscode:prepublish": "tsc -p ./",
 		"compile": "tsc -p ./",
 		"watch": "tsc -w -p ./",
 		"postinstall": "node ./node_modules/vscode/bin/install"
 	},
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "@types/node": "^11.13.8",
-    "tslint": "^5.16.0",
-    "typescript": "^3.4.5",
-    "vscode": "^1.1.33"
-  }
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"devDependencies": {
+		"@types/node": "^11.13.8",
+		"tslint": "^5.16.0",
+		"typescript": "^3.4.5",
+		"vscode": "^1.1.33"
+	}
 }
