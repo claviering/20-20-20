@@ -1,6 +1,6 @@
 {
 	"name": "20-20-20",
-	"version": "0.0.12",
+	"version": "0.0.13",
 	"description": "A helpful trick called the 20-20-20 rule prevent eye strain",
 	"publisher": "Megan",
 	"engines": {
@@ -36,7 +36,12 @@
 		"watch": "tsc -w -p ./",
 		"postinstall": "node ./node_modules/vscode/bin/install"
 	},
-	"keywords": ["vscode", "eye strain", "20-20-20", "20/20/20"],
+	"keywords": [
+		"vscode",
+		"eye strain",
+		"20-20-20",
+		"20/20/20"
+	],
 	"homepage": "https://github.com/claviering/20-20-20",
 	"author": "",
 	"license": "MIT",
