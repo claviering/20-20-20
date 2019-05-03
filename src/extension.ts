@@ -4,29 +4,29 @@ import * as vscode from 'vscode';
 export function activate(context: vscode.ExtensionContext) {
   // 20 分钟出现一次
   setInterval(() => {
-    CatCodingPanel.createOrShow(context.extensionPath);
+    PreventEyeStrain.createOrShow(context.extensionPath);
   }, 20*60*1000)
 
   context.subscriptions.push(
     vscode.commands.registerCommand('preventingEyeStrain.start', () => {
-      CatCodingPanel.createOrShow(context.extensionPath);
+      PreventEyeStrain.createOrShow(context.extensionPath);
     })
   );
 
   context.subscriptions.push(
     vscode.commands.registerCommand('preventingEyeStrain.stop', () => {
-      if (CatCodingPanel.currentPanel) {
-        CatCodingPanel.currentPanel.doRefactor();
+      if (PreventEyeStrain.currentPanel) {
+        PreventEyeStrain.currentPanel.doRefactor();
       }
     })
   );
 
   if (vscode.window.registerWebviewPanelSerializer) {
     // Make sure we register a serializer in activation event
-    vscode.window.registerWebviewPanelSerializer(CatCodingPanel.viewType, {
+    vscode.window.registerWebviewPanelSerializer(PreventEyeStrain.viewType, {
       async deserializeWebviewPanel(webviewPanel: vscode.WebviewPanel, state: any) {
         console.log(`Got state: ${state}`);
-        CatCodingPanel.revive(webviewPanel, context.extensionPath);
+        PreventEyeStrain.revive(webviewPanel, context.extensionPath);
       }
     });
   }
@@ -35,11 +35,11 @@ export function activate(context: vscode.ExtensionContext) {
 /**
  * Manages cat coding webview panels
  */
-class CatCodingPanel {
+class PreventEyeStrain {
   /**
    * Track the currently panel. Only allow a single panel to exist at a time.
    */
-  public static currentPanel: CatCodingPanel | undefined;
+  public static currentPanel: PreventEyeStrain | undefined;
 
   public static readonly viewType = 'preventingEyeStrain';
 
@@ -53,14 +53,14 @@ class CatCodingPanel {
       : undefined;
 
     // If we already have a panel, show it.
-    if (CatCodingPanel.currentPanel) {
-      CatCodingPanel.currentPanel._panel.reveal(column);
+    if (PreventEyeStrain.currentPanel) {
+      PreventEyeStrain.currentPanel._panel.reveal(column);
       return;
     }
 
     // Otherwise, create a new panel.
     const panel = vscode.window.createWebviewPanel(
-      CatCodingPanel.viewType,
+      PreventEyeStrain.viewType,
       'Preventing Eye Strain',
       column || vscode.ViewColumn.One,
       {
@@ -72,11 +72,11 @@ class CatCodingPanel {
       }
     );
 
-    CatCodingPanel.currentPanel = new CatCodingPanel(panel, extensionPath);
+    PreventEyeStrain.currentPanel = new PreventEyeStrain(panel, extensionPath);
   }
 
   public static revive(panel: vscode.WebviewPanel, extensionPath: string) {
-    CatCodingPanel.currentPanel = new CatCodingPanel(panel, extensionPath);
+    PreventEyeStrain.currentPanel = new PreventEyeStrain(panel, extensionPath);
   }
 
   private constructor(panel: vscode.WebviewPanel, extensionPath: string) {
@@ -125,7 +125,7 @@ class CatCodingPanel {
   }
 
   public dispose() {
-    CatCodingPanel.currentPanel = undefined;
+    PreventEyeStrain.currentPanel = undefined;
 
     // Clean up our resources
     this._panel.dispose();
