@@ -1,3 +1,10 @@
 {
-    "editor.insertSpaces": false
+    "less.compile": {
+        "compress": true,
+        "sourceMap": false,
+        "autoprefixer": "> 5%, last 2 Chrome versions, not ie 6-9",
+        "out": "../media/",
+        "outExt": ".css"
+    },
+    "20-20-20-timer": "00:10:10"
 }

@@ -1,0 +1,48 @@
+:root {
+  --number-margin: 5px;
+}
+.button-content{
+  text-align: center;
+  margin: 20px 0px;
+}
+.play-button{
+  background-color: #2196F3;
+  color: #fff;
+  padding: 12px 20px;
+  width: 30%;
+  margin: 0 5px;
+  border: 0;
+  border-radius: 2px;
+  font-size: 1em;
+  cursor: pointer;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  transition: background 0.15s ease;
+  outline: none;
+}
+#app{
+  display: flex;
+  flex-wrap: wrap;
+  width: 370px;
+  margin: auto;
+}
+.number{
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  box-shadow: 0px 0px 2px 0px rgba(50, 50, 50, 0.75);
+  background-color: #fff;
+}
+.number:nth-child(9n+3){
+  margin-right: var(--number-margin);
+}
+.number:nth-child(9n+6){
+  margin-right: var(--number-margin);
+}
+.number:nth-child(-n+27):nth-child(n+19){
+  margin-bottom: var(--number-margin);
+}
+.number:nth-child(-n+54):nth-child(n+46){
+  margin-bottom: var(--number-margin);
+}

@@ -1,0 +1,102 @@
+@translateZ: 300px; // 第一个元素突出大小
+@number: 10; // 10个元素
+
+html {
+  height: 100%;
+}
+
+body {
+  margin: 0px;
+  padding: 0px;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.text-content{
+  width: inherit;
+  margin-bottom: 100px;
+  .box{
+    display: flex;
+    font-size: 2rem;
+    font-weight: bold;
+  }
+  .left-text{
+    width: 49%;
+    text-align: right;
+  }
+}
+
+
+@keyframes rotate {
+  0% {
+    transform: rotateX(0);
+  }
+  100% {
+    transform: rotateX(-360deg);
+  }
+}
+@keyframes opacity-item {
+  0% {
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  20% {
+    opacity: 0;
+  }
+  40% {
+    opacity: 0;
+  }
+  90% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.loop(@number, @time)when(@number < 11) {
+  >div:nth-child(@{number}) {
+    transform: rotateX(36deg * ((@number)-1)) translateZ(150px);
+    animation: opacity-item @time linear ((@number)-2s) infinite paused;
+    opacity: 0;
+  }
+  .loop((@number + 1), @time);
+}
+
+.timer {
+  display: flex;
+  font-size: 100px;
+  .rotateAnimation(@time) {
+    animation: rotate @time linear infinite paused;
+    transform-style: preserve-3d;
+  }
+  .play {
+    .rotateAnimation(10s);
+    .loop(1, 10s);
+  }
+  .running{
+    animation-play-state: running;
+    &>div{
+      animation-play-state: running !important;
+    }
+  }
+  .second {
+    &>div {
+      position: absolute;
+    }
+    p {
+      margin: 0px;
+    }
+  }
+}
