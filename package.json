@@ -2,7 +2,7 @@
 	"name": "20-20-20",
 	"version": "0.1.1",
 	"description": "A helpful trick called the 20-20-20 rule prevent eye strain",
-	"publisher": "weiye",
+	"publisher": "Megan",
 	"engines": {
 		"vscode": "^1.38.0"
 	},
@@ -60,6 +60,7 @@
 	"homepage": "https://github.com/claviering/20-20-20",
 	"author": "",
 	"license": "MIT",
+	"icon": "icon.png",
 	"devDependencies": {
 		"@types/node": "^12.12.0",
 		"@typescript-eslint/eslint-plugin": "^3.0.2",
