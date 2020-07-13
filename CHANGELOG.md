@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.2] - 2020-07-13
+
+### Add
+
+- 用户可以自定义时间,添加计时器
+
+### Removed
+
+- 删除按钮
+
 ## [0.0.11] - 2019-05-02
 
 ### Add

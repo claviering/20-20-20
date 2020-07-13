@@ -10,10 +10,10 @@ export function activate(context: vscode.ExtensionContext) {
   let minute = Number.parseInt(timeSplit[1]);
   let second = Number.parseInt(timeSplit[2]);
   let totalSecond = second + minute * 60 + hour * 3600;
-  // 20 分钟出现一次
+  // 定时出现一次
   setInterval(() => {
     PreventEyeStrain.createOrShow(context.extensionPath);
-  }, totalSecond*60*1000)
+  }, totalSecond*1000)
 
   context.subscriptions.push(
     vscode.commands.registerCommand('preventingEyeStrain.start', () => {
