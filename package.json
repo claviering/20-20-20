@@ -39,7 +39,7 @@
 				"20-20-20-timer": {
 					"type": "string",
 					"description": "timer for a break",
-					"default": "00:00:10"
+					"default": "00:20:00"
 				}
 			}
 		}
