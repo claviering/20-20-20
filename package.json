@@ -2,8 +2,8 @@
 	"name": "20-20-20",
 	"displayName": "20-20-20",
 	"description": "A helpful trick called the 20-20-20 rule for preventing eye strain",
-	"publisher": "claviering",
-	"version": "0.1.2",
+	"publisher": "Megan",
+	"version": "1.0.0",
 	"engines": {
 		"vscode": "^1.63.0"
 	},
