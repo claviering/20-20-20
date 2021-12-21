@@ -2,9 +2,44 @@
 
 Webview Panel will be opened every 20 minutes to remind you to take a break
 
+## Features
+
+- Set a timer for working time
+- View time remaining in status bar
+- Click on status bar to cancel or reset timer
+
+## Available Commands
+
+- 20-20-20: Start
+- 20-20-20: Cancel
+- 20-20-20: Restar
+
+## Supported Settings
+
+| Name                       | Default | Description                                                                                                                 |
+| -------------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `20-20-20.workingTime`     | `true`  | Continue working should take a break for preventing eye strain. e.g. 20m for 20 minutes. 1h for 1 hour. 30s for 30 seconds. |
+| `20-20-20.breakingTime`    | `true`  | Time for taking a break. e.g. 20m for 20 minutes. 1h for 1 hour. 30s for 30 seconds.                                        |
+| `20-20-20.showInformation` | `true`  | Whether to show information when finish a workingTime                                                                       |
+| `20-20-20.message`         | `true`  | The message to show. when finish a workingTime                                                                              |
+| `20-20-20.priority`        | `true`  | The priority of the item. Higher values mean the item should be shown more to the left.                                     |
+
 ## Usage
 
 run `Eye Strain: Stroll to grab a cup of coffee` to open Webview Panel
+
+## 实现思路
+
+1. 在 vscode 生命周期 onStartupFinished 执行插件
+2. 插件在 StatusBar 生命周期执行，添加一个倒计时，显示格式 HH:mm
+3. 创建 onCommand 命令 可以手动启动/关闭倒计时
+4. 创建 Configuration 配置可以自定义:计数器的显示格式、工作倒计时时间、休息倒计时时间
+
+## subscriptions: {dispose}[]
+
+确保插件卸载的时候回收资源
+
+参考 https://stackoverflow.com/questions/55554018/purpose-for-subscribing-a-command-in-vscode-extension
 
 ## About 20/20/20 rule
 
@@ -58,6 +93,4 @@ claviering@gmail.com
 
 ## License
 
-Copyright (c) Microsoft Corporation. All rights reserved.
-
-Licensed under the MIT License.
+[MIT License.](LICENSE.txt)
