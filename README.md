@@ -1,6 +1,8 @@
+![20-20-eyesights](./20-20-eyesights.png)
+
 # 20/20/20 rule
 
-Webview Panel will be opened every 20 minutes to remind you to take a break
+It will be opened every 20 minutes to remind you to take a break
 
 ## Features
 
