@@ -9,7 +9,7 @@ const ERROE_MESSAGE = 'Please input a valid time, such as "20m", "1h", "30s"';
 // Timestamp for last interval tick to sync across windows
 const TIMER_STATE_KEY = "timerState";
 const TIMER_ACTIVE_KEY = "timerActive";
-const TIMER_START_TIME_KEY = "timerStartTime";
+const TIMER_END_TIME_KEY = "timerEndTime"; // New key to store end time
 const IS_WORKING_KEY = "isWorking";
 
 export function activate(context: vscode.ExtensionContext) {
@@ -23,8 +23,8 @@ export function activate(context: vscode.ExtensionContext) {
   if (!context.globalState.get(TIMER_ACTIVE_KEY)) {
     context.globalState.update(TIMER_ACTIVE_KEY, false);
   }
-  if (!context.globalState.get(TIMER_START_TIME_KEY)) {
-    context.globalState.update(TIMER_START_TIME_KEY, 0);
+  if (!context.globalState.get(TIMER_END_TIME_KEY)) {
+    context.globalState.update(TIMER_END_TIME_KEY, 0);
   }
 
   const { subscriptions } = context;
@@ -87,40 +87,49 @@ export function activate(context: vscode.ExtensionContext) {
   myStatusBarItem.command = "20-20-20._timer-click";
 
   function showTimer() {
-    // Get current time value from global state
-    const time = context.globalState.get(TIMER_STATE_KEY) as number;
+    const now = Date.now();
+    const endTime = context.globalState.get(TIMER_END_TIME_KEY) as number;
     const isWorking = context.globalState.get(IS_WORKING_KEY) as boolean;
     
-    let text = formateDate(format, time);
+    // Calculate remaining seconds
+    let remainingSeconds = Math.max(0, Math.floor((endTime - now) / 1000));
+    
+    // Update the global state for other windows
+    context.globalState.update(TIMER_STATE_KEY, remainingSeconds);
+    
+    let text = formateDate(format, remainingSeconds);
     myStatusBarItem.text = text;
     
-    if (time === 0 && isWorking && showInformation) {
-      vscode.window.showInformationMessage(message, "Got It!");
-    }
-    
-    let newTime = time;
-    let newIsWorking = isWorking;
-    
-    if (time === 0) {
-      newTime = getSecond(isWorking ? breakingTime : workingTime);
-      newIsWorking = !isWorking;
-      // Update working state
+    // Check if timer has finished
+    if (remainingSeconds === 0 && endTime > 0) {
+      if (isWorking && showInformation) {
+        vscode.window.showInformationMessage(message, "Got It!");
+      }
+      
+      // Toggle between working and breaking
+      const newIsWorking = !isWorking;
       context.globalState.update(IS_WORKING_KEY, newIsWorking);
-    } else {
-      newTime--;
+      
+      // Set new end time
+      const durationSeconds = getSecond(newIsWorking ? workingTime : breakingTime);
+      const newEndTime = now + (durationSeconds * 1000);
+      context.globalState.update(TIMER_END_TIME_KEY, newEndTime);
     }
     
-    // Update time in global state
-    context.globalState.update(TIMER_STATE_KEY, newTime);
     myStatusBarItem.show();
   }
 
   function start() {
     if (timer) return;
     
-    // Mark timer as active in global state
+    // Calculate end time based on current time plus duration
+    const isWorking = context.globalState.get(IS_WORKING_KEY) as boolean;
+    const durationSeconds = getSecond(isWorking ? workingTime : breakingTime);
+    const endTime = Date.now() + (durationSeconds * 1000);
+    
+    // Store end time in global state
+    context.globalState.update(TIMER_END_TIME_KEY, endTime);
     context.globalState.update(TIMER_ACTIVE_KEY, true);
-    context.globalState.update(TIMER_START_TIME_KEY, Date.now());
     
     timer = setInterval(showTimer, 1000);
     myStatusBarItem.show();
@@ -129,12 +138,13 @@ export function activate(context: vscode.ExtensionContext) {
   function restart() {
     // Reset working state to true
     context.globalState.update(IS_WORKING_KEY, true);
+    
+    // Calculate new end time
+    const durationSeconds = getSecond(workingTime);
+    const endTime = Date.now() + (durationSeconds * 1000);
+    context.globalState.update(TIMER_END_TIME_KEY, endTime);
+    
     clearInterval(timer);
-    
-    // Reset time in global state
-    const newTime = getSecond(workingTime);
-    context.globalState.update(TIMER_STATE_KEY, newTime);
-    
     showTimer();
     timer = setInterval(showTimer, 1000);
     myStatusBarItem.show();
@@ -155,6 +165,7 @@ export function activate(context: vscode.ExtensionContext) {
   if (context.globalState.get(TIMER_ACTIVE_KEY)) {
     // Synchronize with existing timer if it's active
     timer = setInterval(showTimer, 1000);
+    showTimer(); // Show immediately to update UI
     myStatusBarItem.show();
   } else {
     // Start a new timer
