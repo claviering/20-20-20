@@ -2,13 +2,31 @@ import * as vscode from "vscode";
 let myStatusBarItem: vscode.StatusBarItem;
 import { getSecond, formateDate, checkTimeFormat } from "./utils";
 let timer: any = null;
-let time: number = 0;
-let isWorking: boolean = true;
 const CANCEL_TIMER_LABEL = "$(close) Cancel timer";
 const RESET_TIMER_LABEL = "$(clock) Reset timer";
 const ERROE_MESSAGE = 'Please input a valid time, such as "20m", "1h", "30s"';
 
+// Timestamp for last interval tick to sync across windows
+const TIMER_STATE_KEY = "timerState";
+const TIMER_ACTIVE_KEY = "timerActive";
+const TIMER_START_TIME_KEY = "timerStartTime";
+const IS_WORKING_KEY = "isWorking";
+
 export function activate(context: vscode.ExtensionContext) {
+  // Initialize global state if needed
+  if (!context.globalState.get(TIMER_STATE_KEY)) {
+    context.globalState.update(TIMER_STATE_KEY, 0);
+  }
+  if (context.globalState.get(IS_WORKING_KEY) === undefined) {
+    context.globalState.update(IS_WORKING_KEY, true);
+  }
+  if (!context.globalState.get(TIMER_ACTIVE_KEY)) {
+    context.globalState.update(TIMER_ACTIVE_KEY, false);
+  }
+  if (!context.globalState.get(TIMER_START_TIME_KEY)) {
+    context.globalState.update(TIMER_START_TIME_KEY, 0);
+  }
+
   const { subscriptions } = context;
   let {
     format,
@@ -21,7 +39,11 @@ export function activate(context: vscode.ExtensionContext) {
   if (!checkTimeFormat(workingTime) || !checkTimeFormat(breakingTime)) {
     vscode.window.showInformationMessage(ERROE_MESSAGE);
   }
-  time = getSecond(workingTime) || 20 * 60; // 默认20分钟
+
+  // Initialize timer state
+  const initialTime = getSecond(workingTime) || 20 * 60; // default 20 minutes
+  context.globalState.update(TIMER_STATE_KEY, initialTime);
+  
   let startDisposable = vscode.commands.registerCommand(
     "20-20-20.start",
     () => {
@@ -65,40 +87,80 @@ export function activate(context: vscode.ExtensionContext) {
   myStatusBarItem.command = "20-20-20._timer-click";
 
   function showTimer() {
+    // Get current time value from global state
+    const time = context.globalState.get(TIMER_STATE_KEY) as number;
+    const isWorking = context.globalState.get(IS_WORKING_KEY) as boolean;
+    
     let text = formateDate(format, time);
     myStatusBarItem.text = text;
+    
     if (time === 0 && isWorking && showInformation) {
       vscode.window.showInformationMessage(message, "Got It!");
     }
+    
+    let newTime = time;
+    let newIsWorking = isWorking;
+    
     if (time === 0) {
-      time = getSecond(isWorking ? breakingTime : workingTime);
-      isWorking = !isWorking;
-      return;
+      newTime = getSecond(isWorking ? breakingTime : workingTime);
+      newIsWorking = !isWorking;
+      // Update working state
+      context.globalState.update(IS_WORKING_KEY, newIsWorking);
+    } else {
+      newTime--;
     }
-    time--;
+    
+    // Update time in global state
+    context.globalState.update(TIMER_STATE_KEY, newTime);
     myStatusBarItem.show();
   }
 
   function start() {
     if (timer) return;
+    
+    // Mark timer as active in global state
+    context.globalState.update(TIMER_ACTIVE_KEY, true);
+    context.globalState.update(TIMER_START_TIME_KEY, Date.now());
+    
     timer = setInterval(showTimer, 1000);
     myStatusBarItem.show();
   }
+  
   function restart() {
-    isWorking = true;
+    // Reset working state to true
+    context.globalState.update(IS_WORKING_KEY, true);
     clearInterval(timer);
-    time = getSecond(workingTime);
+    
+    // Reset time in global state
+    const newTime = getSecond(workingTime);
+    context.globalState.update(TIMER_STATE_KEY, newTime);
+    
     showTimer();
     timer = setInterval(showTimer, 1000);
     myStatusBarItem.show();
   }
+  
   function cancel() {
     if (!timer) return;
     clearInterval(timer);
     timer = null;
+    
+    // Mark timer as inactive in global state
+    context.globalState.update(TIMER_ACTIVE_KEY, false);
+    
     myStatusBarItem.hide();
   }
-  start();
+
+  // Check if there's an existing timer running in another window
+  if (context.globalState.get(TIMER_ACTIVE_KEY)) {
+    // Synchronize with existing timer if it's active
+    timer = setInterval(showTimer, 1000);
+    myStatusBarItem.show();
+  } else {
+    // Start a new timer
+    start();
+  }
+  
   subscriptions.push(myStatusBarItem);
   subscriptions.push(startDisposable);
   subscriptions.push(cancelDisposable);
@@ -117,7 +179,10 @@ export function activate(context: vscode.ExtensionContext) {
         if (!checkTimeFormat(workingTime) || !checkTimeFormat(breakingTime)) {
           vscode.window.showInformationMessage(ERROE_MESSAGE);
         } else {
-          time = getSecond(isWorking ? workingTime : breakingTime);
+          // Fix: Use globalState instead of local variables
+          const isWorking = context.globalState.get(IS_WORKING_KEY) as boolean;
+          const newTime = getSecond(isWorking ? workingTime : breakingTime);
+          context.globalState.update(TIMER_STATE_KEY, newTime);
         }
         showInformation = vscode.workspace
           .getConfiguration("20-20-20")
