@@ -3,7 +3,7 @@
 	"displayName": "20-20-20",
 	"description": "A helpful trick called the 20-20-20 rule for preventing eye strain",
 	"publisher": "Megan",
-	"version": "1.1.1",
+	"version": "1.1.2",
 	"engines": {
 		"vscode": "^1.63.0"
 	},

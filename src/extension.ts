@@ -102,7 +102,9 @@ export function activate(context: vscode.ExtensionContext) {
     
     // Check if timer has finished
     if (remainingSeconds === 0 && endTime > 0) {
-      if (isWorking && showInformation) {
+      // Only show message if the timer expired recently (not after VSCode restart)
+      // Consider recently as within the last minute
+      if (isWorking && showInformation && (now - endTime < 60000)) {
         vscode.window.showInformationMessage(message, "Got It!");
       }
       
@@ -136,6 +138,12 @@ export function activate(context: vscode.ExtensionContext) {
   }
   
   function restart() {
+    // Clear interval immediately
+    if (timer) {
+      clearInterval(timer);
+      timer = null;
+    }
+
     // Reset working state to true
     context.globalState.update(IS_WORKING_KEY, true);
     
@@ -144,10 +152,11 @@ export function activate(context: vscode.ExtensionContext) {
     const endTime = Date.now() + (durationSeconds * 1000);
     context.globalState.update(TIMER_END_TIME_KEY, endTime);
     
-    clearInterval(timer);
-    showTimer();
-    timer = setInterval(showTimer, 1000);
+    // Update display immediately with the full time
+    myStatusBarItem.text = formateDate(format, durationSeconds - 1);
     myStatusBarItem.show();
+    
+    timer = setInterval(showTimer, 1000);
   }
   
   function cancel() {
@@ -163,10 +172,21 @@ export function activate(context: vscode.ExtensionContext) {
 
   // Check if there's an existing timer running in another window
   if (context.globalState.get(TIMER_ACTIVE_KEY)) {
-    // Synchronize with existing timer if it's active
-    timer = setInterval(showTimer, 1000);
-    showTimer(); // Show immediately to update UI
-    myStatusBarItem.show();
+    const now = Date.now();
+    const endTime = context.globalState.get(TIMER_END_TIME_KEY) as number;
+    
+    // If timer is active but significantly expired (more than 1 hour)
+    // or if the end time is in the past
+    if (endTime < now) {
+      // Reset to a new working period without showing notification
+      context.globalState.update(IS_WORKING_KEY, true);
+      restart();
+    } else {
+      // Synchronize with existing active timer
+      timer = setInterval(showTimer, 1000);
+      showTimer(); // Show immediately to update UI
+      myStatusBarItem.show();
+    }
   } else {
     // Start a new timer
     start();
